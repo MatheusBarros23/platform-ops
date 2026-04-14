@@ -1,20 +1,24 @@
 name: Versioning
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       source_repo:
         description: Source repository name (without owner)
         required: true
+        type: string
       source_ref:
         description: Source branch to update
         required: true
+        type: string
       app_version:
         description: Released app/image version
         required: true
+        type: string
       bump_part:
         description: Version part to bump (major, minor, patch)
         required: true
+        type: string
 
 jobs:
   simulate-versioning:
