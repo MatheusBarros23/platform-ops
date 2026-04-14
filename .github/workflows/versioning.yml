@@ -19,6 +19,10 @@ on:
         description: Version part to bump (major, minor, patch)
         required: true
         type: string
+    secrets:
+      source_repo_token:
+        description: Token with write access to the source repository branch
+        required: true
 
 jobs:
   versioning:
@@ -37,7 +41,7 @@ jobs:
         with:
           repository: MatheusBarros23/${{ inputs.source_repo }}
           ref: ${{ inputs.source_ref }}
-          token: ${{ secrets.PLATFORM_OPS_TOKEN || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.source_repo_token }}
 
       - uses: ruby/setup-ruby@v1
         with:
