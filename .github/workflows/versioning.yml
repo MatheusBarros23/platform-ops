@@ -37,7 +37,7 @@ jobs:
         with:
           repository: MatheusBarros23/${{ inputs.source_repo }}
           ref: ${{ inputs.source_ref }}
-          token: ${{ secrets.PLATFORM_OPS_TOKEN }}
+          token: ${{ secrets.PLATFORM_OPS_TOKEN || secrets.GITHUB_TOKEN }}
 
       - uses: ruby/setup-ruby@v1
         with:
