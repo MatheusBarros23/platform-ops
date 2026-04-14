@@ -21,7 +21,7 @@ on:
         type: string
 
 jobs:
-  simulate-versioning:
+  versioning:
     runs-on: ubuntu-latest
     steps:
       - name: Echo received payload
