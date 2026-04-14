@@ -1,0 +1,55 @@
+name: Versioning
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_repo:
+        description: Source repository name (without owner)
+        required: true
+      source_ref:
+        description: Source branch to update
+        required: true
+      app_version:
+        description: Released app/image version
+        required: true
+      bump_part:
+        description: Version part to bump (major, minor, patch)
+        required: true
+
+jobs:
+  simulate-versioning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo received payload
+        run: |
+          echo "source_owner=MatheusBarros23"
+          echo "source_repo=${{ inputs.source_repo }}"
+          echo "source_ref=${{ inputs.source_ref }}"
+          echo "app_version=${{ inputs.app_version }}"
+          echo "bump_part=${{ inputs.bump_part }}"
+
+      - name: Checkout source repository
+        uses: actions/checkout@v6
+        with:
+          repository: MatheusBarros23/${{ inputs.source_repo }}
+          ref: ${{ inputs.source_ref }}
+          token: ${{ secrets.PLATFORM_OPS_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Apply version bump and commit
+        run: |
+          bundle exec rake "version:bump[${{ inputs.bump_part }}]"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if ! git diff --quiet -- lib/hello_world/version.rb; then
+            git add lib/hello_world/version.rb
+            git commit -m "chore(version): prepare next snapshot from ${{ inputs.app_version }} [skip ci]"
+            git push origin HEAD:${{ inputs.source_ref }}
+          else
+            echo "No version change to commit"
+          fi
